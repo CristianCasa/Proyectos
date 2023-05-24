@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conexión MQTT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
+</head>
+<body>
+    <h1>Conexión MQTT v1</h1>
+
+    <script>
+        // Crear un cliente MQTT
+        var clientId = "cliente-1"; // El identificador de tu cliente MQTT
+        var broker = "broker.emqx.io"; // Dirección del broker MQTT
+        var port = 1883; // Puerto del broker MQTT
+        var topic = "robot/servos"; // Tema MQTT
+
+        var client = new Paho.MQTT.Client(broker, port, clientId);
+
+        // Establecer las funciones de devolución de llamada
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        // Conectar al broker MQTT
+        client.connect({ onSuccess: onConnect });
+
+        // Función de devolución de llamada cuando la conexión MQTT se establece correctamente
+        function onConnect() {
+            console.log("Conexión MQTT establecida.");
+            client.subscribe(topic);
+        }
+
+        // Función de devolución de llamada cuando se pierde la conexión MQTT
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.log("Conexión MQTT perdida: " + responseObject.errorMessage);
+            }
+        }
+
+        // Función de devolución de llamada cuando llega un mensaje MQTT
+        function onMessageArrived(message) {
+            console.log("Mensaje MQTT recibido: " + message.payloadString);
+            // Hacer algo con el mensaje recibido
+        }
+    </script>
+</body>
+</html>
